@@ -1,0 +1,1 @@
+choco install wsl2 -y
