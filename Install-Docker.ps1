@@ -1,4 +1,5 @@
-$Username=""
+$config=Get-Content ./env-variables.json -raw | ConvertFrom-Json
+$Username=$config.v_vm_username
 
 Write-Output "Installing Hyper-v and Containers features"
 Enable-WindowsOptionalFeature -Online -FeatureName $("Microsoft-Hyper-V", "Containers") -All -NoRestart
@@ -12,10 +13,6 @@ Write-Output "Docker"
 choco install docker-desktop --pre -y
 Write-Output "Adding User to Docker group"
 Add-LocalGroupMember -Group "docker-users" -Member $Username
-#dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-#wsl --update
-#wsl --install -d ubuntu-18.04
-#wsl --set-version ubuntu 2
 Write-Output "Restart PC"
 Restart-computer
 

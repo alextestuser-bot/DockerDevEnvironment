@@ -18,25 +18,28 @@ terraform {
 provider "azurerm" {
   features {}
 
-  subscription_id = var.v_subscription_id
-  tenant_id       = var.v_tenant_id
-  client_id       = var.v_appId
-  client_secret   = var.v_password
+  subscription_id = local.config.v_subscription_id
+  tenant_id       = local.config.v_tenant_id
+  client_id       = local.config.v_appId
+  client_secret   = local.config.v_password
 
 }
 
 
+locals {
+  config = jsondecode(file("./env-variables.json"))
+}
 
 resource "azurerm_resource_group" "rg" {
-    name                = var.v_rg
-    location            = var.v_region_location
+    name                = local.config.v_rg
+    location            = local.config.v_region_location
 }
 
 resource "azurerm_virtual_network" "vnet" {
-   name                 = "${var.v_prefix}-appvnet"
-   location             = var.v_region_location
-   resource_group_name  = var.v_rg
-   address_space        = var.v_vnet_address_space
+   name                 = "${local.config.v_prefix}-appvnet"
+   location             = local.config.v_region_location
+   resource_group_name  = local.config.v_rg
+   address_space        = local.config.v_vnet_address_space
 
    depends_on = [
      azurerm_resource_group.rg
@@ -44,17 +47,17 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 resource "azurerm_subnet" "vm_subnet" {
-    name                 = var.v_vm_subnet_name
-    address_prefixes     = var.v_subnet_prefixes
-    resource_group_name  = var.v_rg
+    name                 = local.config.v_vm_subnet_name
+    address_prefixes     = local.config.v_subnet_prefixes
+    resource_group_name  = local.config.v_rg
     virtual_network_name = azurerm_virtual_network.vnet.name
 
 }
 
 resource "azurerm_network_interface" "vm-nic" {
   #count                 = 1
-  name                  = var.v_nic_name_vm
-  location              = var.v_region_location
+  name                  = local.config.v_nic_name_vm
+  location              = local.config.v_region_location
   resource_group_name   = azurerm_resource_group.rg.name
 
   ip_configuration {
@@ -67,21 +70,21 @@ resource "azurerm_network_interface" "vm-nic" {
 
 resource "azurerm_public_ip" "vm_public_ip" {
   #count               = 1
-  name                = var.v_vm_public_ip
+  name                = local.config.v_vm_public_ip
   resource_group_name = azurerm_resource_group.rg.name
-  location            = var.v_region_location
+  location            = local.config.v_region_location
   allocation_method   = "Static"
 }
 
 
 resource "azurerm_windows_virtual_machine" "vm" {
   #count                 = 1
-  name                  = var.v_vm_name
-  resource_group_name   = var.v_rg
-  location              = var.v_region_location
-  size                  = var.v_vm_size
-  admin_username        = var.v_vm_username
-  admin_password        = var.v_vm_password
+  name                  = local.config.v_vm_name
+  resource_group_name   = local.config.v_rg
+  location              = local.config.v_region_location
+  size                  = local.config.v_vm_size
+  admin_username        = local.config.v_vm_username
+  admin_password        = local.config.v_vm_password
   network_interface_ids = [
     azurerm_network_interface.vm-nic.id
 
@@ -112,9 +115,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
 
 
 resource "azurerm_network_security_group" "vm_nsg" {
-  name                = "${var.v_vm_name}-nsg"
-  location            = var.v_region_location
-  resource_group_name = var.v_rg
+  name                = "${local.config.v_vm_name}-nsg"
+  location            = local.config.v_region_location
+  resource_group_name = local.config.v_rg
   depends_on = [
      azurerm_resource_group.rg
   ]

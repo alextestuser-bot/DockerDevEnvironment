@@ -1,7 +1,9 @@
-$Subscription=""
-$TenantId=""
-$ResourceGroupName=""
-$VMname=""
+$config=Get-Content ./env-variables.json -raw | ConvertFrom-Json
+
+$Subscription=$config.v_subscription_id
+$TenantId=$config.v_tenant_id
+$ResourceGroupName=$config.v_rg
+$VMname=$config.v_vm_name
 #Get Subscription
 Write-Host -foregroundcolor green "Get Azure Tenant and Subscription" 
 Set-AzContext -TenantId $TenantId -Subscription $Subscription -Force
