@@ -8,7 +8,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 Write-Output "Installing wsl2 vscode notepadplusplus git"
 choco install vscode notepadplusplus git -y
 Write-Output "Installing wsl2"
-choco install wsl2 -y
+choco install wsl -y
 Write-Output "Docker"
 choco install docker-desktop --pre -y
 Write-Output "Adding User to Docker group"
