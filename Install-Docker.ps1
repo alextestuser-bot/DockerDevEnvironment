@@ -1,6 +1,3 @@
-$config=Get-Content ./env-variables.json -raw | ConvertFrom-Json
-$Username=$config.v_vm_username
-
 Write-Output "Installing Hyper-v and Containers features"
 Enable-WindowsOptionalFeature -Online -FeatureName $("Microsoft-Hyper-V", "Containers") -All -NoRestart
 Write-Output "Installing Chocolatey"
@@ -12,8 +9,6 @@ choco install wsl -y
 Write-Output "Docker"
 choco install docker-desktop --pre -y
 Write-Output "Adding User to Docker group"
-Add-LocalGroupMember -Group "docker-users" -Member $Username
+Add-LocalGroupMember -Group 'docker-users' -Member "NT AUTHORITY\Authenticated Users"
 Write-Output "Restart PC"
 Restart-computer
-
-
